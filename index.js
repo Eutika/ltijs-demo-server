@@ -23,6 +23,7 @@ lti.onConnect(async (token, req, res) => {
   return res.sendFile(path.join(__dirname, './public/index.html'))
 })
 
+
 // When receiving deep linking request redirects to deep screen
 lti.onDeepLinking(async (token, req, res) => {
   return lti.redirect(res, '/deeplink', { newResource: true })
@@ -38,14 +39,14 @@ const setup = async () => {
   /**
    * Register platform
    */
-  /* await lti.registerPlatform({
-    url: 'http://localhost/moodle',
-    name: 'Platform',
-    clientId: 'CLIENTID',
-    authenticationEndpoint: 'http://localhost/moodle/mod/lti/auth.php',
-    accesstokenEndpoint: 'http://localhost/moodle/mod/lti/token.php',
-    authConfig: { method: 'JWK_SET', key: 'http://localhost/moodle/mod/lti/certs.php' }
-  }) */
+await lti.registerPlatform({
+    url: 'http://0.0.0.0',
+    name: 'moodle',
+    clientId: 'VtPf5EZIj3coaL5',
+    authenticationEndpoint: 'http://0.0.0.0/mod/lti/auth.php',
+    accesstokenEndpoint: 'http://0.0.0.0/mod/lti/token.php',
+    authConfig: { method: 'JWK_SET', key: 'http://0.0.0.0/mod/lti/certs.php' }
+  })
 }
 
 setup()
