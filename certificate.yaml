@@ -1,0 +1,25 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: web-cert-moodle
+  namespace: acorn
+spec:
+  dnsNames:
+    - web-white-water-6b257f24.aimvp.eutika.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: le
+  secretName: web-tls-secret-moodle
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: web-cert-lti
+  namespace: acorn
+spec:
+  dnsNames:
+    - lti-dawn-butterfly-879a7b69.aimvp.eutika.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: le
+  secretName: web-tls-secret-lti

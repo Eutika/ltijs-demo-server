@@ -1,0 +1,67 @@
+args: {
+	database_type: "mariadb"
+	mariadbname: "moodledb"
+	postgresdbname: "postgresdb"
+	moodle_username: "user"
+	moodle_password: "bitnami"
+	moodle_email: "user@example.com"
+	moodle_site_name: "New Site"
+	moodle_lang: "es"
+}
+
+localData: {
+	mariadb: {
+		services: mariadb: {
+		image: "ghcr.io/acorn-io/mariadb:v#.#.#-#"
+		serviceArgs: {
+		dbName: args.mariadbname
+		}
+		}
+	},
+	postgres: {
+		services: postgres:{
+		image: "ghcr.io/acorn-io/postgres:v#.#-#"
+		serviceArgs: {
+		dbName: args.postgresdbname
+		}
+		}
+	
+	}
+}
+std.ifelse(args.database_type == "mariadb",localData.mariadb,localData.postgres)
+
+containers: {
+	web: {
+		image: "docker.io/bitnami/moodle:4.3"
+		ports: {
+			publish: "443:8080/http"
+		}
+		env: {
+			MOODLE_DATABASE_TYPE: std.ifelse(args.database_type == "mariadb", "mariadb", "pgsql")
+			MOODLE_DATABASE_USER: std.ifelse(args.database_type == "mariadb", "@{service.mariadb.secrets.admin.username}","@{service.postgres.secrets.admin.username}" ) 
+			MOODLE_DATABASE_PASSWORD: std.ifelse(args.database_type == "mariadb", "@{service.mariadb.secrets.admin.password}", "@{service.postgres.secrets.admin.password}")
+			MOODLE_DATABASE_HOST: std.ifelse(args.database_type == "mariadb", "@{service.mariadb.address}", "@{service.postgres.address}")
+			MOODLE_DATABASE_PORT_NUMBER: std.ifelse(args.database_type == "mariadb", "@{service.mariadb.port.3306}", "@{service.postgres.port.5432}")
+			MOODLE_DATABASE_NAME: std.ifelse(args.database_type == "mariadb", "@{service.mariadb.data.dbName}", "@{service.postgres.data.dbName}")
+			MOODLE_USERNAME: args.moodle_username
+			MOODLE_PASSWORD: args.moodle_password
+			MOODLE_EMAIL: args.moodle_email
+			MOODLE_SITE_NAME: args.moodle_site_name
+			MOODLE_LANG: args.moodle_lang
+		}
+        dirs: {
+            "/bitnami/moodle": "volume://moodle"
+            "/bitnami/moodledata": "volume://moodledata"
+
+        }
+	}
+}
+
+volumes: {
+    moodle: {
+		size: "2G"
+	}
+    moodledata:{
+		size: "2G"
+    }
+}

@@ -1,14 +1,17 @@
 require('dotenv').config()
 const path = require('path')
 const routes = require('./src/routes')
-
+const { connect } = require('http2')
 const lti = require('ltijs').Provider
+
+console.log(process.env)
 
 // Setup
 lti.setup(process.env.LTI_KEY,
   {
     url: 'mongodb://' + process.env.DB_HOST + '/' + process.env.DB_NAME + '?authSource=admin',
-    connection: { user: process.env.DB_USER, pass: process.env.DB_PASS }
+    connection: { user: process.env.DB_USER, pass: process.env.DB_PASS },
+    debug: true
   }, {
     staticPath: path.join(__dirname, './public'), // Path to static files
     cookies: {
@@ -20,7 +23,7 @@ lti.setup(process.env.LTI_KEY,
 
 // When receiving successful LTI launch redirects to app
 lti.onConnect(async (token, req, res) => {
-  return res.sendFile(path.join(__dirname, './public/index.html'))
+  return res.redirect(process.env.APP_URL)
 })
 
 
@@ -40,12 +43,12 @@ const setup = async () => {
    * Register platform
    */
 await lti.registerPlatform({
-    url: 'http://0.0.0.0',
+    url: process.env.PLATFORM_URL,
     name: 'moodle',
-    clientId: 'VtPf5EZIj3coaL5',
-    authenticationEndpoint: 'http://0.0.0.0/mod/lti/auth.php',
-    accesstokenEndpoint: 'http://0.0.0.0/mod/lti/token.php',
-    authConfig: { method: 'JWK_SET', key: 'http://0.0.0.0/mod/lti/certs.php' }
+    clientId: process.env.CLIENT_ID,
+    authenticationEndpoint: process.env.AUTH_ENDPOINT,
+    accesstokenEndpoint: process.env.TOKEN_ENDPOINT,
+    authConfig: { method: 'JWK_SET', key: process.env.KEY_ENDPOINT }
   })
 }
 

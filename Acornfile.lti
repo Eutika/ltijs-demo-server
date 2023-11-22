@@ -1,0 +1,33 @@
+containers: { mongodb: {
+	name:        "MongoDB"
+	description: "Container running a MongoDB server"
+	image:       "mongo:6.0"
+	ports:       "27017/tcp"
+	env: {
+		MONGO_INITDB_ROOT_USERNAME: "admin"
+		MONGO_INITDB_ROOT_PASSWORD: "password"
+		MONGO_INITDB_DATABASE: "ltidb"
+	}
+
+}
+	lti: {
+		build: {
+			context: "."
+		}
+		ports: publish: "443:3000/http"
+		env: {
+			DB_HOST: "mongodb"
+		  	DB_PORT: "27017"
+		  	DB_NAME: "ltidb"
+		  	DB_USER: "admin"
+		  	DB_PASS: "password"
+			APP_URL: "https://mvp-cool-paper-cd6ade6d.aimvp.eutika.com"
+      		PLATFORM_URL: "https://web-white-water-6b257f24.aimvp.eutika.com"
+      		AUTH_ENDPOINT: "https://web-white-water-6b257f24.aimvp.eutika.com/mod/lti/auth.php"
+      		TOKEN_ENDPOINT: "https://web-white-water-6b257f24.aimvp.eutika.com/mod/lti/token.php"
+      		KEY_ENDPOINT: "https://web-white-water-6b257f24.aimvp.eutika.com/mod/lti/certs.php"
+      		CLIENT_ID: "3wzAepP7i1sk4yB"
+			LTI_KEY: "lti"
+		}
+	}
+}
